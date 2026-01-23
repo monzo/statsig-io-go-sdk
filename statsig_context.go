@@ -12,6 +12,9 @@ type errorContext struct {
 	LogToOutput  bool
 	EventCount   int
 }
+
+type ExposureHook func(configName string, exposure ExposureEvent) (shouldEmit bool)
+
 type evalContext struct {
 	Caller                            string `json:"tag,omitempty"`
 	ConfigName                        string `json:"configName,omitempty"`
@@ -32,7 +35,7 @@ type evalContext struct {
 	ExposureHook                      ExposureHook
 }
 
-func (c *evalContext) shouldLogExposure(user User, configName string, evt *ExposureEvent) bool {
+func (c *evalContext) shouldLogExposure(configName string, evt *ExposureEvent) bool {
 	if c == nil {
 		return true
 	}
@@ -40,7 +43,7 @@ func (c *evalContext) shouldLogExposure(user User, configName string, evt *Expos
 		return false
 	}
 	exposureHook := c.ExposureHook
-	return exposureHook == nil || exposureHook(user, configName, *evt)
+	return exposureHook == nil || exposureHook(configName, *evt)
 }
 
 type initContext struct {

@@ -132,13 +132,11 @@ func (c *Client) GetGateWithExposureLoggingDisabled(user User, gate string) Feat
 	}, &evalContext{Caller: "getGateWithExposureLoggingDisabled", ConfigName: gate, DisableLogExposures: true})
 }
 
-type ExposureHook func(user User, configName string, exposure ExposureEvent) (shouldEmit bool)
-
 // Checks the value of a Feature Gate for the given user without logging an exposure event
 func (c *Client) GetGateWithExposureHook(user User, gate string, exposureHook ExposureHook) FeatureGate {
 	return c.errorBoundary.captureCheckGate(func(context *evalContext) FeatureGate {
 		return c.checkGateImpl(user, gate, context)
-	}, &evalContext{Caller: "getGateWithExposureLoggingDisabled", ConfigName: gate, ExposureHook: exposureHook})
+	}, &evalContext{Caller: "getGateWithExposureHook", ConfigName: gate, ExposureHook: exposureHook})
 }
 
 // Logs an exposure event for the dynamic config
@@ -165,6 +163,12 @@ func (c *Client) GetConfigWithExposureLoggingDisabled(user User, config string) 
 	return c.errorBoundary.captureGetConfig(func(context *evalContext) DynamicConfig {
 		return c.getConfigImpl(user, config, context)
 	}, &evalContext{Caller: "getConfigWithExposureLoggingDisabled", ConfigName: config, DisableLogExposures: true})
+}
+
+func (c *Client) GetConfigWithExposureHook(user User, config string, exposureHook ExposureHook) DynamicConfig {
+	return c.errorBoundary.captureGetConfig(func(context *evalContext) DynamicConfig {
+		return c.getConfigImpl(user, config, context)
+	}, &evalContext{Caller: "getConfigWithExposureHook", ConfigName: config, ExposureHook: exposureHook, Statsig: c})
 }
 
 // Logs an exposure event for the config
@@ -198,6 +202,12 @@ func (c *Client) GetExperimentWithExposureLoggingDisabled(user User, experiment 
 	return c.errorBoundary.captureGetConfig(func(context *evalContext) DynamicConfig {
 		return c.getConfigImpl(user, experiment, context)
 	}, &evalContext{Caller: "getExperimentWithExposureLoggingDisabled", ConfigName: experiment, IsExperiment: true, DisableLogExposures: true, Statsig: c})
+}
+
+func (c *Client) GetExperimentWithExposureHook(user User, experiment string, exposureHook ExposureHook) DynamicConfig {
+	return c.errorBoundary.captureGetConfig(func(context *evalContext) DynamicConfig {
+		return c.getConfigImpl(user, experiment, context)
+	}, &evalContext{Caller: "getExperimentWithExposureHook", ConfigName: experiment, IsExperiment: true, ExposureHook: exposureHook, Statsig: c})
 }
 
 // Gets the DynamicConfig value of an Experiment for the given user with configurable options
@@ -262,6 +272,12 @@ func (c *Client) GetLayerWithExposureLoggingDisabled(user User, layer string) La
 	return c.errorBoundary.captureGetLayer(func(context *evalContext) Layer {
 		return c.getLayerImpl(user, layer, context)
 	}, &evalContext{Caller: "getLayerWithExposureLoggingDisabled", ConfigName: layer, DisableLogExposures: true, Statsig: c})
+}
+
+func (c *Client) GetLayerWithExposureHook(user User, layer string, exposureHook ExposureHook) Layer {
+	return c.errorBoundary.captureGetLayer(func(context *evalContext) Layer {
+		return c.getLayerImpl(user, layer, context)
+	}, &evalContext{Caller: "getLayerWithExposureHook", ConfigName: layer, ExposureHook: exposureHook, Statsig: c})
 }
 
 // Gets the Layer object for the given user with configurable options
