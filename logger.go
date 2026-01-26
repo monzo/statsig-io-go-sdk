@@ -151,7 +151,7 @@ func (l *logger) logGateExposure(
 	l.addEvaluationDetailsToExposureEvent(evt, res.EvaluationDetails)
 	l.addDeviceMetadataToExposureEvent(evt, res.DerivedDeviceMetadata)
 	l.addSamplingMetadataToExposureEvent(evt, samplingRate, shadowLogged, samplingMode)
-	if shouldLog && context.shouldLogExposure(user, gateName, evt) {
+	if shouldLog && context.shouldLogExposure(gateName, evt) {
 		l.logExposure(*evt)
 	}
 	return evt
@@ -231,7 +231,7 @@ func (l *logger) logConfigExposure(
 	l.addEvaluationDetailsToExposureEvent(evt, res.EvaluationDetails)
 	l.addDeviceMetadataToExposureEvent(evt, res.DerivedDeviceMetadata)
 	l.addSamplingMetadataToExposureEvent(evt, samplingRate, shadowLogged, samplingMode)
-	if shouldLog && (context == nil || !context.DisableLogExposures) {
+	if shouldLog && context.shouldLogExposure(configName, evt) {
 		l.logExposure(*evt)
 	}
 	return evt
@@ -283,7 +283,7 @@ func (l *logger) logLayerExposure(
 	l.addEvaluationDetailsToExposureEvent(evt, evalResult.EvaluationDetails)
 	l.addDeviceMetadataToExposureEvent(evt, evalResult.DerivedDeviceMetadata)
 	l.addSamplingMetadataToExposureEvent(evt, samplingRate, shadowLogged, samplingMode)
-	if shouldLog && (context == nil || !context.DisableLogExposures) {
+	if shouldLog && context.shouldLogExposure(config.Name, evt) {
 		l.logExposure(*evt)
 	}
 	return evt
